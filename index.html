@@ -79,13 +79,13 @@
     Your browser does not support the video tag.
   </video>
 
-  <form class="cta-form">
-    <h2>Claim the Mask</h2>
-    <input type="text" name="fullname" placeholder="Your Full Name" required><br>
-    <input type="text" name="brand" placeholder="Brand You Represent" required><br>
-    <input type="email" name="email" placeholder="Business Email" required><br>
-    <button type="submit">Request Access</button>
-  </form>
+ <form class="cta-form" id="claimForm">
+  <h2>Claim the Mask</h2>
+  <input type="text" id="fullname" placeholder="Your Full Name" required><br>
+  <input type="text" id="brand" placeholder="Brand You Represent" required><br>
+  <input type="email" id="email" placeholder="Business Email" required><br>
+  <button type="submit">Request Access</button>
+</form> 
 
   <div class="countdown">
     ⏳ <span id="countdown-timer"></span> left until the Mask is claimed forever
@@ -119,5 +119,34 @@
     setInterval(updateCountdown, 1000);
     updateCountdown();
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  const supabaseUrl = 'https://perkmjptmwcaaclahtml.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwicmVmIjoicGVya21qcHRtd2NhYWNsYWh0bWwiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc1NzYxNDMxOSwiZXhwIjoyMDczMTkwMzE5fQ.BBkZi-KCF5c2S2_KYSSn4L1RxafHCoFENY0XApBQ_IY
+'; // full key
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+  document.getElementById('claimForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const fullname = document.getElementById('fullname').value;
+    const brand = document.getElementById('brand').value;
+    const email = document.getElementById('email').value;
+
+    const { data, error } = await supabase
+      .from('visits')
+      .insert([{ fullname, brand, email }]);
+
+    if (error) {
+      alert('❌ Error saving your request. Please try again.');
+      console.error(error);
+    } else {
+      alert('✅ Request submitted successfully. Verón is watching...');
+      document.getElementById('claimForm').reset();
+    }
+  });
+</script>
+
 </body>
 </html>
