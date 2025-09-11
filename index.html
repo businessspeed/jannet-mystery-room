@@ -1,13 +1,80 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jannet Olivier | Mystery Room</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tajanstvena Soba</title>
+  <style>
+    body {
+      background-color: #000;
+      color: gold;
+      font-family: 'Georgia', serif;
+      padding: 2em;
+      text-align: center;
+    }
+    .subtitle {
+      color: #ccc;
+    }
+    .veron {
+      margin-top: 2em;
+      padding: 1em;
+      border: 2px dashed gold;
+      background: #111;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
-  <h1>The Mystery Room is Live</h1>
-  <p>This is a deploy-ready placeholder page. Final AI-powered version coming in next commits.</p>
+  <script>
+    const access = prompt("Enter access password:");
+    const correctPassword = "jannetolivier23";
+    if (access !== correctPassword) {
+      document.body.innerHTML = "<h1 style='color: red'>Access denied</h1>";
+    }
+  </script>
+
+  <h1>Tajanstvena soba je uživo</h1>
+  <p class="subtitle">Dobrodošli. Ovdje počinje vaše AI partnerstvo.</p>
+
+  <form id="claimForm">
+    <h2>Zatraži pristup</h2>
+    <input type="text" id="fullname" placeholder="Ime i prezime" required><br><br>
+    <input type="text" id="brand" placeholder="Brend koji zastupate" required><br><br>
+    <input type="email" id="email" placeholder="Email adresa" required><br><br>
+    <button type="submit">Pošalji zahtjev</button>
+  </form>
+
+  <div class="veron">
+    <h3>🤖 Verón AI Whisper Agent</h3>
+    <p>Prvi digitalni agent povjerenja. Više uskoro...</p>
+  </div>
+
+  <script>
+    const supabaseUrl = 'https://perkmjptmwcaaclahtml.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz...'; // PUNI ključ unijeti ručno
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    document.getElementById('claimForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const fullname = document.getElementById('fullname').value;
+      const brand = document.getElementById('brand').value;
+      const email = document.getElementById('email').value;
+
+      const { data, error } = await supabase
+        .from('visits')
+        .insert([{ fullname, brand, email }]);
+
+      if (error) {
+        alert('❌ Greška pri slanju. Pokušajte ponovno.');
+        console.error(error);
+      } else {
+        alert('✅ Uspješno poslano! Verón vas promatra...');
+        document.getElementById('claimForm').reset();
+        window.location.href = "thank-you.html";
+      }
+    });
+  </script>
 </body>
 </html>
