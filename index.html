@@ -53,7 +53,8 @@
   <script>
     const supabaseUrl = 'https://perkmjptmwcaaclahtml.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz...'; // PUNI ključ unijeti ručno
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    const { createClient } = supabase;
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
     document.getElementById('claimForm').addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -62,7 +63,7 @@
       const brand = document.getElementById('brand').value;
       const email = document.getElementById('email').value;
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('visits')
         .insert([{ fullname, brand, email }]);
 
