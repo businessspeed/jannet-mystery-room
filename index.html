@@ -23,14 +23,18 @@
       background: #111;
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <script>
+    // Simple access gate; sets a flag so later scripts can decide whether to run
     const access = prompt("Enter access password:");
     const correctPassword = "jannetolivier23";
     if (access !== correctPassword) {
       document.body.innerHTML = "<h1 style='color: red'>Access denied</h1>";
+      window.__accessGranted = false;
+    } else {
+      window.__accessGranted = true;
     }
   </script>
 
@@ -51,30 +55,61 @@
   </div>
 
   <script>
-    const supabaseUrl = 'https://perkmjptmwcaaclahtml.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz...'; // PUNI ključ unijeti ručno
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    // Stop here if access was denied
+    if (window.__accessGranted === false) {
+      // Do not bind any listeners
+    } else {
+      // Configure Supabase; leave empty if not yet provisioned
+      const SUPABASE_URL = 'https://perkmjptmwcaaclahtml.supabase.co';
+      const SUPABASE_KEY = '';
 
-    document.getElementById('claimForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
-
-      const fullname = document.getElementById('fullname').value;
-      const brand = document.getElementById('brand').value;
-      const email = document.getElementById('email').value;
-
-      const { data, error } = await supabase
-        .from('visits')
-        .insert([{ fullname, brand, email }]);
-
-      if (error) {
-        alert('❌ Greška pri slanju. Pokušajte ponovno.');
-        console.error(error);
-      } else {
-        alert('✅ Uspješno poslano! Verón vas promatra...');
-        document.getElementById('claimForm').reset();
-        window.location.href = "thank-you.html";
+      // Create client only when config looks valid
+      let supabaseClient = null;
+      const urlLooksValid = /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(SUPABASE_URL);
+      if (window.supabase && urlLooksValid && SUPABASE_KEY) {
+        try {
+          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } catch (err) {
+          console.warn('Supabase init failed:', err);
+        }
       }
-    });
+
+      const formEl = document.getElementById('claimForm');
+      if (!formEl) {
+        // Form not present (e.g., access denied page). Nothing to do.
+      } else {
+        formEl.addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          const fullname = document.getElementById('fullname')?.value?.trim() || '';
+          const brand = document.getElementById('brand')?.value?.trim() || '';
+          const email = document.getElementById('email')?.value?.trim() || '';
+
+          if (!fullname || !brand || !email) {
+            alert('Molimo ispunite sva polja.');
+            return;
+          }
+
+          if (!supabaseClient) {
+            alert('Slanje trenutno nije dostupno. Molimo kontaktirajte nas na info@jannetolivier.com.');
+            return;
+          }
+
+          const { data, error } = await supabaseClient
+            .from('visits')
+            .insert([{ fullname, brand, email }]);
+
+          if (error) {
+            alert('❌ Greška pri slanju. Pokušajte ponovno.');
+            console.error(error);
+          } else {
+            alert('✅ Uspješno poslano! Verón vas promatra...');
+            formEl.reset();
+            window.location.href = 'thank-you.html';
+          }
+        });
+      }
+    }
   </script>
 </body>
 </html>
